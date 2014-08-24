@@ -1,9 +1,10 @@
-Package: network
+Package: MultiframeGraph
 Type: Package
-Title: Multiframe graph plot wrapper functions for igraph objects
+Title: Multiframe plot wrapper functions for igraph objects
 Version: 1.0
 Date: 2014-08-23
 Author: Stephen Downing
 Maintainer: Stephen Downing <sdowning.bm02g@nctu.edu.tw>
-Description: Wrapper functions and related helper functions to produce multiframe plots of igraph objects faceted by a vertex attribute and/or edge period attribute.
+Description: Wrapper functions and related helper functions to produce
+    multiframe plots of multiple igraph objects faceted by a given attribute.
 License: GPL (v3 or later)
