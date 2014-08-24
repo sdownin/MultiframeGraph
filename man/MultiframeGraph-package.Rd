@@ -3,7 +3,7 @@
 \alias{MultiframeGraph}
 \docType{package}
 \title{
-MultiframeGraph
+The MultiframeGraph package
 }
 \description{
 Wrapper functions and related helper functions to produce multiframe plots of igraph objects.
@@ -28,6 +28,6 @@ Maintainer: Stephen Downing <sdowning.bm02g@nctu.edu.tw>
 \code{\link[igraph:igraph-package]{igraph}}
 }
 \examples{
-coming soon.
+
 }
 

@@ -11,7 +11,7 @@ map(x, minmax = c(1, 20), log = F)
 \item{minmax}{a vector of two positive numeric values defining the interval
 onto which x is mapped, e.g. c(1,20)}
 
-\item{logical}{log transform; default FALSE}
+\item{log}{logical to do log transform; default FALSE}
 }
 \value{
 a vector same length as x argument
@@ -29,6 +29,7 @@ positive. Use log transform to even out the intervals between elements in x,
 for example to make more clear sizes of graph vertices.
 }
 \examples{
+\dontrun{
 ## simple example
 x1 <- 90:100
 map(x = x1, minmax = c(1,20), log = F)
@@ -38,6 +39,7 @@ map(x = x2, minmax = c(0,1), log = T)
 ## log transform with negative decimal values
 x3 <- seq(from = -1.5, to = 1.5, by = .1)
 map(x = x3, minmax = c(1,2), log = T)
+}
 }
 \author{
 Stephen Downing

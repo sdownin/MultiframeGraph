@@ -6,7 +6,7 @@
 #' @param x  an n-length vector of numeric values
 #' @param minmax  a vector of two positive numeric values defining the interval
 #' onto which x is mapped, e.g. c(1,20)
-#' @param logical  log transform; default FALSE
+#' @param log  logical to do log transform; default FALSE
 #' @return a vector same length as x argument
 #' @details 
 #' This function (f: Rd -> Rd) maps a vector proportionally or via log transform
@@ -17,6 +17,7 @@
 #' for example to make more clear sizes of graph vertices.
 #' @author Stephen Downing
 #' @examples
+#' \dontrun{
 #' ## simple example
 #' x1 <- 90:100 
 #' map(x = x1, minmax = c(1,20), log = F)
@@ -26,7 +27,7 @@
 #' ## log transform with negative decimal values
 #' x3 <- seq(from = -1.5, to = 1.5, by = .1)
 #' map(x = x3, minmax = c(1,2), log = T)
-
+#' }
 map <- function(x,   #vector of degrees
                 minmax=c(1,20),  # vector of length 2: min and max
                 log=F           # logicial for log transform
@@ -50,7 +51,6 @@ map <- function(x,   #vector of degrees
   y <- m + range*scale
   return(y)
 }
-
 
 
 
