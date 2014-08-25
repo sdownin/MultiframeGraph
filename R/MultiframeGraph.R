@@ -42,13 +42,23 @@ map <- function(x,   #vector of degrees
   scale <- (x-min(x)) / dist 
   
   if(log) {
+    if(all(x>=1 | x==0)) {
+      lx <- log(x)
+      maxlx <- max(lx[lx<Inf & lx>-Inf])
+      scale <- lx / maxlx
+      y <- m + range*scale
+      y[is.na(y)|is.nan(y)|y==-Inf|y==Inf] <- m
+    } else {
     #augment x proportions to > 1 yielding values suitable for log transform
     scalepos <- (scale+1)/min(scale+1)
     #account for log transform while still proportional to elements of x 
     # by normalizing with the log of the maximum
     scale <- log(scalepos) / log(max(scalepos))
-  }
+    y <- m + range*scale
+    }
+  } else {
   y <- m + range*scale
+  }
   return(y)
 }
 
