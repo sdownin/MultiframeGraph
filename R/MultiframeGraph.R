@@ -259,11 +259,6 @@ multicontracted <- function(graphlist,
   }# end universal size attributes #########################
   
   # begin graph attributes  ########################
-  center <- which.max(degree(sub))
-  order <- order(V(sub)$name)
-  layout <- layout.star(graph = sub,
-                        center = center,
-                        order = order)
   
   if (savepng) {
     png(paste(savename,"_",attrib,".png",sep=""),
@@ -276,6 +271,11 @@ multicontracted <- function(graphlist,
   }
     for ( i in seq_len(mn)) {
       sub <- gout[[i]]
+      center <- which.max(degree(sub))
+      order <- order(V(sub)$name)
+      layout <- layout.star(graph = sub,
+                            center = center,
+                            order = order)
       pdnamei <- pdname[i]
       territoryi <- unique(V(sub)$territory)[1]
       
