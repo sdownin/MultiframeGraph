@@ -64,273 +64,277 @@ map <- function(x,   #vector of degrees
 
 
 
-# 
-# #' multigraph
-# #' 
-# #' Plot a matrix of igraph objects (induced subgraphs by time period) 
-# #' with nodes and edges colored and sized by attribute and overall plot 
-# #' faceted by time period. 
-# #' @param graphlist  a list of igraph objects (i.e., graphs)
-# #' @param attrib  character name of igraph vector attribute for coloring, sizing
-# #' @param savename  character name to save plot to working director
-# #' @param pdbreak  integer vector of times to divide periods
-# #' @param vertex.label.minmax numeric vector of length 2: minmax vertex label
-# #' @param vertex.size.minmax numeric vector of length 2: minmax vertex size
-# #' @param edge.width.minmax numeric vector of length 2: minmax edge width
-# #' @param edge.label.minmax numeric vector of length 2: minmax edge label
-# #' @return list of length 2: 1. gout: subgraphs by time period for each 
-# #' igraph object in list; 2. namedf: df of attribute names and values for 
-# #' the subgraph nodes.
-# #' @details 
-# #' This function creates a plot with a matrix of subgraphs from a list of 
-# #' igraph objects. Each graph in the list is a row and each time period is 
-# #' a column. Each igraph object in the list must have the same vertex 
-# #' attribute names. Each igraph object in the list must have the time 
-# #' period attribute called "period", a numeric or interger attribute. 
-# #' Vertex coloring is automatically generated from rainbow pallette. 
-# #' @author Stephen Downing
-# 
-# multigraph <- function(graphlist,
-#                        attrib,
-#                        savename,
-#                        pdbreak,
-#                        vertex.label.minmax,
-#                        vertex.size.minmax,
-#                        edge.width.minmax,
-#                        edge.label.minmax,
-#                        png.width,
-#                        png.height,
-#                        png.res
-# ) {
-#   n <- length(graphlist)
-#   m <- length(pdbreak) + 1
-#   gout <- list()
-#   # get list of unique names from all graphs in list
-#   name <- c()
-#   pdlist <- c()
-#   for (i in 1:n){
-#     name <- c(name,get.vertex.attribute(graphlist[[i]],attrib))
-#     pdlist <- c(pdlist,unique(V(graphlist[[i]])$period))
-#   }
-#   pdlist <- unique(pdlist)
-#   name <- unique(name)
-#   name <- name[order(name)]
-#   namedf <- data.frame(name=name,number=1:length(name))
-#   namedf[,1] <- as.character(namedf[,1])
-#   
-#   pdname <- c()
-#   for (i in 1:length(pdlist)) {
-#     pdname <- 
-#   }
-#   pdname <- rep(c("<1990","<2000","<2013"),n) # repeat for number of graphs
-#   
-#   for (i in 1:n)  {  #loop of territory 
-#     g <- graphlist[[i]]
-#     V(g)$ipcfnum <- NA
-#     for (l in 1:dim(namedf)[1]) {
-#       V(g)[which(get.vertex.attribute(g,attrib)==
-#                    namedf[l,1])]$ipcfnum <- namedf[l,2]
-#     }
-#     territory <- unique(V(g)$territory)[1]
-#     
-#     #split by periods#####################
-#     g3 <- g
-#     g2 <- delete.vertices(graph = g3, v = V(g3)[V(g3)$period > pdbreak[1] |
-#                                                   is.na(V(g3)$year)])
-#     g1 <- delete.vertices(graph = g2, v = V(g2)[V(g2)$period > pdbreak[2]])
-#     
-#     V(g3)$indeg <- degree(g3,mode = 'in')
-#     V(g3)$outdeg <- degree(g3,mode = 'out')
-#     V(g3)$degdiff <- V(g3)$indeg - V(g3)$outdeg
-#     #
-#     V(g2)$indeg <- degree(g2,mode = 'in')
-#     V(g2)$outdeg <- degree(g2,mode = 'out')
-#     V(g2)$degdiff <- V(g2)$indeg - V(g2)$outdeg
-#     #
-#     V(g1)$indeg <- degree(g1,mode = 'in')
-#     V(g1)$outdeg <- degree(g1,mode = 'out')
-#     V(g1)$degdiff <- V(g1)$indeg - V(g1)$outdeg
-#     
-#     g3n <- unique(get.vertex.attribute(g3,attrib))
-#     g3n <- g3n[order(g3n)]
-#     g2n <- unique(get.vertex.attribute(g2,attrib))
-#     g2n <- g2n[order(g2n)]
-#     g1n <- unique(get.vertex.attribute(g1,attrib))
-#     g1n <- g1n[order(g1n)]
-#     
-#     g3vl <- c(); g2vl <- c(); g1vl <- c()
-#     for (k in 1:vcount(g3)) {
-#       g3vl[k] <- which(get.vertex.attribute(g3,name = attrib,
-#                                             index = k) == g3n) 
-#     }
-#     for (k in 1:vcount(g2)) {
-#       g2vl[k] <- which(get.vertex.attribute(g2,name = attrib,
-#                                             index = k) == g2n) 
-#     }
-#     for (k in 1:vcount(g1)) {
-#       g1vl[k] <- which(get.vertex.attribute(g1,name = attrib,
-#                                             index = k) == g1n) 
-#     }
-#     # contract graph by attribute name
-#     # 3
-#     gc3 <- contract.vertices(graph = g3,
-#                              mapping = g3vl,
-#                              vertex.attr.comb=list(territory='first',
-#                                                    degree='sum',
-#                                                    year='mean',
-#                                                    degdiff='mean',
-#                                                    indeg='sum',
-#                                                    outdeg='sum',
-#                                                    ipcfnum='mean'))
-#     V(gc3)$name <- g3n
-#     gc3 <- simplify(graph = gc3,remove.multiple = T,
-#                     remove.loops = T,
-#                     edge.attr.comb = list(weight='sum'))
-#     #       for (l in 1:vcount(gc3)) {
-#     #         V(gc3)[l]$ipcfnum <- namedf[which(V(gc3)$name[l]==namedf[l,1]),2]
-#     #       }
-#     # 2
-#     gc2 <- contract.vertices(graph = g2,
-#                              mapping = g2vl,
-#                              vertex.attr.comb=list(territory='first',
-#                                                    degree='sum',
-#                                                    year='mean',
-#                                                    degdiff='mean',
-#                                                    indeg='sum',
-#                                                    outdeg='sum',
-#                                                    ipcfnum='mean'))
-#     V(gc2)$name <- g2n
-#     gc2 <- simplify(graph = gc2,remove.multiple = T,
-#                     remove.loops = T,
-#                     edge.attr.comb = list(weight='sum'))
-#     # 1
-#     gc1 <- contract.vertices(graph = g1,
-#                              mapping = g1vl,
-#                              vertex.attr.comb=list(territory='first',
-#                                                    degree='sum',
-#                                                    year='mean',
-#                                                    degdiff='mean',
-#                                                    indeg='sum',
-#                                                    outdeg='sum',
-#                                                    ipcfnum='mean'))
-#     V(gc1)$name <- g1n
-#     gc1 <- simplify(graph = gc1,remove.multiple = T,
-#                     remove.loops = T,
-#                     edge.attr.comb = list(weight='sum'))
-#     # end contraction
-#     
-#     gout[[1+ length(gout)]] <- gc1
-#     gout[[1+ length(gout)]] <- gc2
-#     gout[[1+ length(gout)]] <- gc3
-#     names(gout)[length(gout)-2] <- paste(territory,1,sep="")
-#     names(gout)[length(gout)-1] <- paste(territory,2,sep="")
-#     names(gout)[length(gout)] <- paste(territory,3,sep="")
-#     # end split by periods ##
-#   } # end territory loop: i territories
-#   
-#   nn <- 3*n
-#   
-#   #make universal size attributes #################
-#   uvl <- c()
-#   uvs <- c()
-#   uw <-  c()
-#   for (i in 1:nn) {
-#     uvl <-   c(uvl,V(gout[[i]])$degree)
-#     uvs <- c(uvs,V(gout[[i]])$degree)
-#     uw <- c(uw,E(gout[[i]])$weight)
-#   }
-#   uvl <- unique(uvl)
-#   uvldf <- data.frame(uvl=uvl,map=map(uvl,vertex.label.minmax,log = T))
-#   uvs <- unique(uvs)
-#   uvsdf <- data.frame(uvs=uvs,map=map(uvs,vertex.size.minmax,log = T))
-#   uw <- unique(uw)
-#   uwdf <- data.frame(uw=uw,map=map(uw,edge.width.minmax,log = T))
-#   ueldf <- data.frame(uw=uw,map=map(uw,edge.label.minmax,log = T))
-#   #
-#   vertexsize <- c()
-#   vertexlabelcex <- c()
-#   edgewidth <- c()
-#   edgelabelcex <- c()
-#   for (i in 1:nn) {
-#     if (vcount(gout[[i]]) > 0) {
-#       for (j in 1:vcount(gout[[i]])) {
-#         V(gout[[i]])$vertexsize[j] <- uvsdf[which(V(gout[[i]])$degree[j]==uvsdf[,1]),2] 
-#         V(gout[[i]])$vertexlabelcex[j] <- uvldf[which(V(gout[[i]])$degree[j]==uvldf[,1]),2] 
-#       }
-#     }
-#     
-#     if (ecount(gout[[i]]) > 0) {
-#       for (k in 1:ecount(gout[[i]])) {
-#         E(gout[[i]])$edgewidth[k] <- uwdf[which(E(gout[[i]])$weight[k]==
-#                                                   uwdf[,1]),2]
-#         E(gout[[i]])$edgelabelcex[k] <- ueldf[which(E(gout[[i]])$weight[k]==
-#                                                       ueldf[,1]),2] 
-#       }
-#     }
-#   }# end universal size attributes #########################
-#   
-#   # begin graph attributes
-#   png(paste(attrib,"_multi",savename,".png",sep=""),width = png.width,height = png.height,units = "in",res = png.res)
-#   par(mar=c(.05,.05,2.2,.05))
-#   par(mfrow=c(n,3))
-#   
-#   for (i in 1:nn) {
-#     sub <- gout[[i]]
-#     pdnamei <- pdname[i]
-#     territory <- unique(V(sub)$territory)[1]
-#     #
-#     V(sub)$color <- "dark blue"
-#     V(sub)[V(sub)$degdiff >= 0]$color <- "red"
-#     
-#     edgequant <- quantile(uw,probs = c(0,.25,.5,.75))
-#     for (i in 1:length(edgequant)) {
-#       E(sub)[E(sub)$weight > edgequant[i]]$color <- gray.colors(n=length(edgequant), start = 0.70, end = 0.2, gamma = 3.5,alpha = .4)[i]
-#     }
-#     
-#     sub <- induced.subgraph(sub,V(sub)[!is.na(V(sub)$degdiff)
-#                                        & !is.nan(V(sub)$degdiff)])
-#     sub <- induced.subgraph(sub,V(sub)[!is.na(V(sub)$degree)
-#                                        & !is.nan(V(sub)$degree)])
-#     sub <- delete.vertices(sub,
-#                            V(sub)[which( 
-#                              !(V(sub)$name %in% get.edgelist(sub)) ) ]
-#     )
-#     
-#     if (vcount(sub) > 0) {
-#       
-#       center <- which.max(degree(sub))
-#       order <- order(V(sub)$name)
-#       
-#       plot.igraph(sub,
-#                   layout=layout.star(graph = sub,
-#                                      center = center,
-#                                      order = order),
-#                   vertex.size=V(sub)$vertexsize,
-#                   vertex.shape='circle',
-#                   vertex.label=V(sub)$ipcfnum,
-#                   vertex.label.cex=V(sub)$vertexlabelcex,
-#                   vertex.label.color='white',
-#                   vertex.color=V(sub)$color,
-#                   vertex.label.font=7,
-#                   edge.arrow.size=map(E(sub)$weight,c(.01,.5)),
-#                   edge.width=E(sub)$edgewidth,
-#                   edge.label=E(sub)$weight,
-#                   edge.label.cex=E(sub)$edgelabelcex,
-#                   edge.label.color='black',
-#                   edge.color=E(sub)$color,
-#                   main=paste("Territory of ",territory,
-#                              "\nPeriod: ",pdnamei,sep="")
-#       )
-#       
-#     } else {  
-#       #create a plot of nothing to use position and add only title
-#       plot(x=0,xlab = NA,ylab = NA,axes = F,
-#            col='white',
-#            frame.plot = F,
-#            main=paste("Territory of ",territory,
-#                       "\nPeriod: ",pdnamei,sep=""))
-#     }
-#   } # end png save
-#   dev.off()
-#   return(list(graphs=gout,namedf=namedf) )
-# } #end function
+
+#' multicontracted
+#' 
+#' Multiframe plot of igraph objects
+#' 
+#' @param graphlist  a list of igraph objects (i.e., graphs)
+#' @param attrib  character name of igraph vector attribute for coloring, sizing
+#' @param pdbreak a vector of the numeric values to divide periods
+#' @param vertex.size.attrib  character {'degree','indeg','outdeg','degdiff'}
+#' @param veretex.color.attrib  character {'degree','indeg','outdeg','degdiff',
+#' <other attribute>}
+#' @param color.attrib character specifying attribute for vertex color scale
+#' @param vertex.label.minmax numeric vector of length 2: minmax vertex label
+#' @param vertex.size.minmax numeric vector of length 2: minmax vertex size
+#' @param edge.width.minmax numeric vector of length 2: minmax edge width
+#' @param edge.label.minmax numeric vector of length 2: minmax edge label
+#' @param savepng logical saveplot as png
+#' @param savename  character name to save plot to working directory
+#' @param png.width numeric width in inches of png output
+#' @param png.height numeric height in inches of png output
+#' @param png.res numeric resolution of png out
+#' @return list of length two: 1. gout: subgraphs by time period for each 
+#' igraph object in list; 2. namedf: df of attribute names and values for 
+#' the subgraph nodes.
+#' @details 
+#' This function creates a multiframe of subgraphs from a list of 
+#' igraph objects. Each graph in the list is a row and each time period is 
+#' a column. Each igraph object in the list must have the same vertex 
+#' attribute names. Each igraph object in the list must have the time 
+#' period attribute called "period", a numeric or interger attribute. 
+#' Vertex coloring is automatically generated from rainbow pallette. 
+#' @author Stephen Downing
+
+
+multicontracted <- function(graphlist,
+                            attrib,
+                            pdbreak,
+                            vertex.size.attrib='degree', 
+                            #{'degree','indeg','outdeg','degdiff'}
+                            vertex.color.attrib='degdiff', 
+                            #{'degree','indeg','outdeg','degdiff'
+                            #<other attribute factors>}
+                            color.attrib='degdiff',
+                            vertex.label.minmax=c(.2,.5),
+                            vertex.size.minmax=c(20,35),
+                            edge.width.minmax=c(3,6),
+                            edge.label.minmax=c(.01,.01),
+                            savepng=F,
+                            savename="mutiContractedGraph",
+                            png.width=15,
+                            png.height=12,
+                            png.res=500
+) {
+  m <- length(graphlist)    #number of rows of multiplot
+  n <- length(pdbreak) - 1  #number of columns of multiplot
+  pdbreak <- pdbreak[order(pdbreak)] #start first breakpoint
+  
+  # vertex names
+  name <- c()
+  for (i in 1:m){
+    name <- c(name,get.vertex.attribute(graphlist[[i]],attrib))
+  }
+  name <- unique(name)
+  name <- name[order(name)]
+  namedf <- data.frame(name=name,ID=seq_len(length(name)) )
+  #numbered list of attributes to be vertex IDs
+  namedf[,1] <- as.character(namedf[,1])
+  
+  # time period names
+  pdname <- c()
+  for (i in 1:(length(pdbreak)-1)) {
+    pdname <- c(pdname,paste(pdbreak[1],"-",pdbreak[i+1],sep=""))
+  }
+  pdname <- rep(pdname,m) # repeat for number of graphs in list
+  
+  ############################################################################
+  #loop of territory (rows of output multiframe plot) ########################
+  gout <- list()
+  for (i in seq_len(m))  { 
+    territory <- names(graphlist)[i]
+    g <- graphlist[[i]]
+    V(g)$territory <- territory
+    
+    attriblen <- length(get.vertex.attribute(g,attrib))
+    for (l in seq_len(nrow(namedf))) {
+      V(g)[which(get.vertex.attribute(g,attrib)==
+                   namedf[l,1])]$name <- namedf[l,2]
+    }
+    
+    ######################################
+    #subloop by periods#####################
+    gpdlist <- list()
+    for (j in seq_len(n)) {
+      #subgraph of only vertices before (deleting >=) period breakpoint
+      #which are not NA or NaN
+      gpd <- delete.vertices(graph = g, v = V(g)[V(g)$period >= pdbreak[j+1] |
+                                                   is.na(V(g)$period) |
+                                                   is.nan(V(g)$period)])
+      #assign degree values, loops default TRUE
+      V(gpd)$degree <- degree(gpd, mode = 'total')
+      V(gpd)$indeg <- degree(gpd,mode = 'in')
+      V(gpd)$outdeg <- degree(gpd,mode = 'out')
+      V(gpd)$degdiff <- V(gpd)$indeg - V(gpd)$outdeg
+      #vector of vertex names included in this subgraph
+      gpdname <- unique(get.vertex.attribute(gpd,attrib))
+      gdpname <- gpdname[order(gpdname)]
+      
+      #index vector of vectices belonging to which attribute value
+      gpdvl <- c()
+      for (k in seq_len(vcount(gpd)) ) {
+        gpdvl[k] <- which(get.vertex.attribute(gpd,name = attrib,
+                                               index = k) == gpdname) 
+      }
+      
+      #contract graph
+      con <- contract.vertices(graph = gpd,
+                               mapping = gpdvl,
+                               vertex.attr.comb=list(territory='first',
+                                                     period='mean',
+                                                     degree='sum',
+                                                     indeg='sum',
+                                                     outdeg='sum',
+                                                     degdiff='mean') )
+      V(con)$name <- gpdname
+      
+      #remove unused vertex attributes
+      z <- c('territory','degree','degdiff','indeg','outdeg','id','period','name')
+      va <- list.vertex.attributes(con)
+      va <- va[!(va %in% z)]
+      for (w in seq_len(length(va))) {
+        con <- remove.vertex.attribute(graph = con, name = va[w])
+      }
+      
+      #simplify by removing duplicate edges and loops, summing into new
+      #edge attribute, weight
+      con <- simplify(graph = con, remove.multiple = T,
+                      remove.loops = T,
+                      edge.attr.comb = list(weight='sum'))
+      
+      #assign graph to next graph ouput list element
+      gout[[((i-1)*n)+j]] <- con
+      names(gout[[((i-1)*n)+j]]) <- paste(territory,"_",j,sep="")
+      
+    } # end period loop j
+    
+  } # end territory loop i
+  ###################################################################
+  
+  #make universal size attributes ##################################
+  mn <- m*n  # total plot frames
+  uvl <- c() #unique vertex label
+  uvs <- c() #unique vertex size
+  uw <-  c() #unique weights of edges
+  for (i in seq_len(mn)) {
+    uvl <- c(uvl,get.vertex.attribute(graph = gout[[i]],
+                                      name = vertex.size.attrib))
+    uvs <- c(uvl,get.vertex.attribute(graph = gout[[i]],
+                                      name = vertex.size.attrib))
+    uw <- c(uw,E(gout[[i]])$weight)
+  }
+  uvl <- unique(uvl)
+  uvldf <- data.frame(uvl=uvl,map=map(uvl,vertex.label.minmax,log = T))
+  uvs <- unique(uvs)
+  uvsdf <- data.frame(uvs=uvs,map=map(uvs,vertex.size.minmax,log = T))
+  uw <- unique(uw)
+  uwdf <- data.frame(uw=uw,map=map(uw,edge.width.minmax,log = T))
+  ueldf <- data.frame(uw=uw,map=map(uw,edge.label.minmax,log = T))
+  #
+  vertexsize <- c()
+  vertexlabelcex <- c()
+  edgewidth <- c()
+  edgelabelcex <- c()
+  for (i in seq_len(mn)) {
+    if (vcount(gout[[i]]) > 0) {
+      for (j in seq_len(vcount(gout[[i]])) ) {
+        V(gout[[i]])$vertexsize[j] <- uvsdf[which(get.vertex.attribute(gout[[i]],
+                                                                      'degree')[j]
+                                            == uvsdf[,1]),2] 
+        V(gout[[i]])$vertexlabelcex[j] <- uvldf[which(get.vertex.attribute(gout[[i]],
+                                                                           'degree')[j]
+                                                      == uvldf[,1]),2] 
+      }
+    }
+    
+    if (ecount(gout[[i]]) > 0) {
+      for (k in seq_len(ecount(gout[[i]])) ) {
+        E(gout[[i]])$edgewidth[k] <- uwdf[which(E(gout[[i]])$weight[k]==
+                                                  uwdf[,1]),2]
+        E(gout[[i]])$edgelabelcex[k] <- ueldf[which(E(gout[[i]])$weight[k]==
+                                                      ueldf[,1]),2] 
+      }
+    }
+  }# end universal size attributes #########################
+  
+  # begin graph attributes  ########################
+  center <- which.max(degree(sub))
+  order <- order(V(sub)$name)
+  layout <- layout.star(graph = sub,
+                        center = center,
+                        order = order)
+  
+  if (savepng) {
+    png(paste(savename,"_",attrib,".png",sep=""),
+        width = png.width, height = png.height, units = "in", res = png.res)
+    par(mar=c(.05,.05,2.2,.05))
+    par(mfrow=c(m,n))
+  } else {
+    par(mar=c(.05,.05,2.2,.05))
+    par(mfrow=c(m,n))
+  }
+    for ( i in seq_len(mn)) {
+      sub <- gout[[i]]
+      pdnamei <- pdname[i]
+      territoryi <- unique(V(sub)$territory)[1]
+      
+      # color
+      if (color.attrib == 'degdiff') {
+        V(sub)$color <- "dark blue"
+        V(sub)[V(sub)$degdiff >= 0]$color <- "red"
+      } else if (color.attrib == 'degree'|
+                   color.attrib == 'indeg' |
+                   color.attrib == 'outdeg') {
+        cval <- get.vertex.attribute(graph = sub,name = color.attrib)
+        V(sub)$color <- heat.colors(n = length(cval),alpha = .6)
+      } else {
+        cval <- get.vertex.attribute(graph = sub,name = color.attrib)
+        V(sub)$color <- rainbow(n = length(cval),alpha = .6)
+      }
+      
+      edgequant <- quantile(uw,probs = c(0,.25,.5,.75))
+      for (i in 1:length(edgequant)) {
+        E(sub)[E(sub)$weight > edgequant[i]]$color <- gray.colors(n=length(edgequant), start = 0.70, end = 0.2, gamma = 3.5,alpha = .4)[i]
+      }
+      
+
+      sub <- induced.subgraph(sub,V(sub)[!is.na(V(sub)$degree) | 
+                                                  !is.nan(V(sub)$degree)])
+      sub <- delete.vertices(sub,
+                             V(sub)[which( 
+                               !(V(sub)$name %in% get.edgelist(sub)) ) ]
+      )
+      
+      if (vcount(sub) > 0) {
+        plot.igraph(sub,
+                    layout=layout,
+                    vertex.size=V(sub)$vertexsize,
+                    vertex.shape='circle',
+                    vertex.label=V(sub)$name,
+                    vertex.label.cex=V(sub)$vertexlabelcex,
+                    vertex.label.color='white',
+                    vertex.color=V(sub)$color,
+                    vertex.label.font=7,
+                    edge.arrow.size=map(E(sub)$weight,c(.01,.05)),
+                    edge.width=E(sub)$edgewidth,
+                    edge.label=E(sub)$weight,
+                    edge.label.cex=E(sub)$edgelabelcex,
+                    edge.label.color='black',
+                    edge.color=E(sub)$color,
+                    main=paste("Territory of ",territoryi,
+                               "\nPeriod: ",pdnamei,sep="")
+        )
+      } else {  
+        #create a plot of nothing to use position and add only title
+        plot(x=0,xlab = NA,ylab = NA,axes = F,
+             col='white',
+             frame.plot = F,
+             main=paste("Territory of ",territoryi,
+                        "\nPeriod: ",pdnamei,sep=""))
+      }
+    if (savepng) {dev.off()}
+    }
+ 
+  return(list(graphs=gout,namedf=namedf) )
+} #end function
