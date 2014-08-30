@@ -7,8 +7,8 @@ multicontracted(graphlist, attrib, pdbreak, vertex.size.attrib = "degree",
   vertex.color.attrib = "degdiff", color.attrib = "degdiff",
   vertex.label.minmax = c(0.2, 0.5), vertex.size.minmax = c(20, 35),
   edge.width.minmax = c(3, 6), edge.label.minmax = c(0.01, 0.01),
-  savepng = F, savename = "mutiContractedGraph", png.width = 15,
-  png.height = 12, png.res = 500)
+  savepng = T, savename = "mutiContractedGraph", png.width = 12,
+  png.height = 10, png.res = 500)
 }
 \arguments{
 \item{graphlist}{a list of igraph objects (i.e., graphs)}
@@ -22,7 +22,8 @@ multicontracted(graphlist, attrib, pdbreak, vertex.size.attrib = "degree",
 \item{veretex.color.attrib}{character {'degree','indeg','outdeg','degdiff',
 <other attribute>}}
 
-\item{color.attrib}{character specifying attribute for vertex color scale}
+\item{color.attrib}{character specifying attribute for vertex color scale
+defaul 'degdiff'}
 
 \item{vertex.label.minmax}{numeric vector of length 2: minmax vertex label}
 
@@ -32,7 +33,7 @@ multicontracted(graphlist, attrib, pdbreak, vertex.size.attrib = "degree",
 
 \item{edge.label.minmax}{numeric vector of length 2: minmax edge label}
 
-\item{savepng}{logical saveplot as png}
+\item{savepng}{logical saveplot as png in working directory}
 
 \item{savename}{character name to save plot to working directory}
 
@@ -43,8 +44,10 @@ multicontracted(graphlist, attrib, pdbreak, vertex.size.attrib = "degree",
 \item{png.res}{numeric resolution of png out}
 }
 \value{
-list of length two: 1. gout: subgraphs by time period for each
-igraph object in list; 2. namedf: df of attribute names and values for
+list of two items:
+1. gout: subgraphs by time period for each
+igraph object in list;
+2. namedf: df of attribute names and values for
 the subgraph nodes.
 }
 \description{

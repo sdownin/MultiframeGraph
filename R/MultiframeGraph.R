@@ -66,9 +66,9 @@ map <- function(x,   #vector of degrees
 
 
 
-#' multicontracted
+#' multicontracted plots
 #' 
-#' Multiframe plot of igraph objects
+#' Multiframe plot of igraph networks with vertices contracted by given attribute
 #' 
 #' @param graphlist  a list of igraph objects (i.e., graphs)
 #' @param attrib  character name of igraph vector attribute for coloring, sizing
@@ -100,6 +100,7 @@ map <- function(x,   #vector of degrees
 #' period attribute called "period", a numeric or interger attribute. 
 #' Vertex coloring is automatically generated from rainbow pallette. 
 #' @author Stephen Downing
+#' @import igraph
 #' @export
 
 multicontracted <- function(graphlist,
@@ -121,6 +122,7 @@ multicontracted <- function(graphlist,
                             png.height=10,
                             png.res=500
 ) {
+  require(igraph)
   m <- length(graphlist)    #number of rows of multiplot
   n <- length(pdbreak) - 1  #number of columns of multiplot
   pdbreak <- pdbreak[order(pdbreak)] #order asceding
@@ -363,11 +365,3 @@ multicontracted <- function(graphlist,
   
   return(list(graphs=gout,namedf=namedf) )
 } #end function
-
-
-## testing
-# mc1 <- multicontracted(graphlist = graphlist,attrib = "sector",pdbreak = c(1911,1989,2000,2012),vertex.size.attrib = 'degree',vertex.color.attrib = 'degdiff',color.attrib = 'degdiff',vertex.label.minmax = c(2,3.5),vertex.size.minmax = c(25,35),edge.width.minmax = c(3,5),edge.label.minmax = c(.001,.001),savepng = T, savename = 'multContTestsector1')
-# 
-# mc2 <- multicontracted(graphlist = graphlist,attrib = "ipc_field",pdbreak = c(1911,1989,2000,2012),vertex.size.attrib = 'degree',vertex.color.attrib = 'degdiff',color.attrib = 'degdiff',vertex.label.minmax = c(1,2.5),vertex.size.minmax = c(13,23),edge.width.minmax = c(2,5),edge.label.minmax = c(.001,.001),savepng = T,savename = 'multiContTestall1',png.res = 300)
-# 
-# dput(x = graphlist,file = 'biofuelpatentnetworks.rda')
