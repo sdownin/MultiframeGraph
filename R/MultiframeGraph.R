@@ -28,6 +28,7 @@
 #' x3 <- seq(from = -1.5, to = 1.5, by = .1)
 #' map(x = x3, minmax = c(1,2), log = T)
 #' }
+#' @export
 map <- function(x,   #vector of degrees
                 minmax=c(1,20),  # vector of length 2: min and max
                 log=F           # logicial for log transform
@@ -76,17 +77,20 @@ map <- function(x,   #vector of degrees
 #' @param veretex.color.attrib  character {'degree','indeg','outdeg','degdiff',
 #' <other attribute>}
 #' @param color.attrib character specifying attribute for vertex color scale
+#' defaul 'degdiff'
 #' @param vertex.label.minmax numeric vector of length 2: minmax vertex label
 #' @param vertex.size.minmax numeric vector of length 2: minmax vertex size
 #' @param edge.width.minmax numeric vector of length 2: minmax edge width
 #' @param edge.label.minmax numeric vector of length 2: minmax edge label
-#' @param savepng logical saveplot as png
+#' @param savepng logical saveplot as png in working directory
 #' @param savename  character name to save plot to working directory
 #' @param png.width numeric width in inches of png output
 #' @param png.height numeric height in inches of png output
 #' @param png.res numeric resolution of png out
-#' @return list of length two: 1. gout: subgraphs by time period for each 
-#' igraph object in list; 2. namedf: df of attribute names and values for 
+#' @return list of two items: 
+#' 1. gout: subgraphs by time period for each 
+#' igraph object in list; 
+#' 2. namedf: df of attribute names and values for 
 #' the subgraph nodes.
 #' @details 
 #' This function creates a multiframe of subgraphs from a list of 
@@ -96,7 +100,7 @@ map <- function(x,   #vector of degrees
 #' period attribute called "period", a numeric or interger attribute. 
 #' Vertex coloring is automatically generated from rainbow pallette. 
 #' @author Stephen Downing
-
+#' @export
 
 multicontracted <- function(graphlist,
                             attrib,
@@ -365,4 +369,5 @@ multicontracted <- function(graphlist,
 # mc1 <- multicontracted(graphlist = graphlist,attrib = "sector",pdbreak = c(1911,1989,2000,2012),vertex.size.attrib = 'degree',vertex.color.attrib = 'degdiff',color.attrib = 'degdiff',vertex.label.minmax = c(2,3.5),vertex.size.minmax = c(25,35),edge.width.minmax = c(3,5),edge.label.minmax = c(.001,.001),savepng = T, savename = 'multContTestsector1')
 # 
 # mc2 <- multicontracted(graphlist = graphlist,attrib = "ipc_field",pdbreak = c(1911,1989,2000,2012),vertex.size.attrib = 'degree',vertex.color.attrib = 'degdiff',color.attrib = 'degdiff',vertex.label.minmax = c(1,2.5),vertex.size.minmax = c(13,23),edge.width.minmax = c(2,5),edge.label.minmax = c(.001,.001),savepng = T,savename = 'multiContTestall1',png.res = 300)
-dput(x = graphlist,file = 'biofuelpatentnetworks.rda')
+# 
+# dput(x = graphlist,file = 'biofuelpatentnetworks.rda')
