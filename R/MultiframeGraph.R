@@ -111,15 +111,18 @@ multicontracted <- function(graphlist,
                             vertex.size.minmax=c(20,35),
                             edge.width.minmax=c(3,6),
                             edge.label.minmax=c(.01,.01),
-                            savepng=F,
+                            savepng=T,
                             savename="mutiContractedGraph",
-                            png.width=15,
-                            png.height=12,
+                            png.width=12,
+                            png.height=10,
                             png.res=500
 ) {
   m <- length(graphlist)    #number of rows of multiplot
   n <- length(pdbreak) - 1  #number of columns of multiplot
-  pdbreak <- pdbreak[order(pdbreak)] #start first breakpoint
+  pdbreak <- pdbreak[order(pdbreak)] #order asceding
+  
+  terrnames <- names(graphlist)
+  terrnames <- rep(terrnames,each=n)
   
   # vertex names
   name <- c()
@@ -131,6 +134,7 @@ multicontracted <- function(graphlist,
   namedf <- data.frame(name=name,ID=seq_len(length(name)) )
   #numbered list of attributes to be vertex IDs
   namedf[,1] <- as.character(namedf[,1])
+  names(namedf)[1] <- attrib
   
   # time period names
   pdname <- c()
@@ -153,8 +157,8 @@ multicontracted <- function(graphlist,
                    namedf[l,1])]$name <- namedf[l,2]
     }
     
-    ######################################
-    #subloop by periods#####################
+    #######################################################
+    #subloop by periods (columns of multiframe graph) #####
     gpdlist <- list()
     for (j in seq_len(n)) {
       #subgraph of only vertices before (deleting >=) period breakpoint
@@ -169,7 +173,7 @@ multicontracted <- function(graphlist,
       V(gpd)$degdiff <- V(gpd)$indeg - V(gpd)$outdeg
       #vector of vertex names included in this subgraph
       gpdname <- unique(get.vertex.attribute(gpd,attrib))
-      gdpname <- gpdname[order(gpdname)]
+      gpdname <- sort(gpdname)
       
       #index vector of vectices belonging to which attribute value
       gpdvl <- c()
@@ -177,6 +181,12 @@ multicontracted <- function(graphlist,
         gpdvl[k] <- which(get.vertex.attribute(gpd,name = attrib,
                                                index = k) == gpdname) 
       }
+      
+#       gpdvl <- rep(NA,vcount(gpd))
+#       for (k in seq_len(length(gpdname)) ) {
+#         gpdvl[which(get.vertex.attribute(gpd,name = attrib)
+#                     ==gpdname[k])] <- gpdname[k]
+#       }
       
       #contract graph
       con <- contract.vertices(graph = gpd,
@@ -188,6 +198,10 @@ multicontracted <- function(graphlist,
                                                      outdeg='sum',
                                                      degdiff='mean') )
       V(con)$name <- gpdname
+
+      for (d in seq_len(length(gpdname))) {
+        V(con)[V(con)$name==gpdname[d]]$id <- d
+      }
       
       #remove unused vertex attributes
       z <- c('territory','degree','degdiff','indeg','outdeg','id','period','name')
@@ -230,7 +244,7 @@ multicontracted <- function(graphlist,
   uvsdf <- data.frame(uvs=uvs,map=map(uvs,vertex.size.minmax,log = T))
   uw <- unique(uw)
   uwdf <- data.frame(uw=uw,map=map(uw,edge.width.minmax,log = T))
-  ueldf <- data.frame(uw=uw,map=map(uw,edge.label.minmax,log = T))
+    ueldf <- data.frame(uw=uw,map=map(uw,edge.label.minmax,log = T))
   #
   vertexsize <- c()
   vertexlabelcex <- c()
@@ -252,13 +266,14 @@ multicontracted <- function(graphlist,
       for (k in seq_len(ecount(gout[[i]])) ) {
         E(gout[[i]])$edgewidth[k] <- uwdf[which(E(gout[[i]])$weight[k]==
                                                   uwdf[,1]),2]
-        E(gout[[i]])$edgelabelcex[k] <- ueldf[which(E(gout[[i]])$weight[k]==
+         E(gout[[i]])$edgelabelcex[k] <- ueldf[which(E(gout[[i]])$weight[k]==
                                                       ueldf[,1]),2] 
       }
     }
+    
   }# end universal size attributes #########################
   
-  # begin graph attributes  ########################
+  # begin graph    ###################################
   
   if (savepng) {
     png(paste(savename,"_",attrib,".png",sep=""),
@@ -269,15 +284,23 @@ multicontracted <- function(graphlist,
     par(mar=c(.05,.05,2.2,.05))
     par(mfrow=c(m,n))
   }
+  #plot attributes
     for ( i in seq_len(mn)) {
       sub <- gout[[i]]
+      sub <- induced.subgraph(sub,V(sub)[!is.na(V(sub)$degree) | 
+                                           !is.nan(V(sub)$degree)])
+      sub <- delete.vertices(sub,
+                             V(sub)[which( 
+                               !(V(sub)$name %in% get.edgelist(sub)) ) ]
+      )
+      
       center <- which.max(degree(sub))
       order <- order(V(sub)$name)
       layout <- layout.star(graph = sub,
                             center = center,
                             order = order)
       pdnamei <- pdname[i]
-      territoryi <- unique(V(sub)$territory)[1]
+      territoryi <- terrnames[i]
       
       # color
       if (color.attrib == 'degdiff') {
@@ -298,25 +321,21 @@ multicontracted <- function(graphlist,
         E(sub)[E(sub)$weight > edgequant[i]]$color <- gray.colors(n=length(edgequant), start = 0.70, end = 0.2, gamma = 3.5,alpha = .4)[i]
       }
       
-
-      sub <- induced.subgraph(sub,V(sub)[!is.na(V(sub)$degree) | 
-                                                  !is.nan(V(sub)$degree)])
-      sub <- delete.vertices(sub,
-                             V(sub)[which( 
-                               !(V(sub)$name %in% get.edgelist(sub)) ) ]
-      )
       
       if (vcount(sub) > 0) {
+        eas <- c(min(E(sub)$edgewidth),max(E(sub)$edgewidth))
+        eas <- eas * (.7/max(eas))
+        E(sub)$edgearrowsize <- map(E(sub)$weight,eas)
         plot.igraph(sub,
                     layout=layout,
                     vertex.size=V(sub)$vertexsize,
                     vertex.shape='circle',
-                    vertex.label=V(sub)$name,
+                    vertex.label=V(sub)$id,
                     vertex.label.cex=V(sub)$vertexlabelcex,
                     vertex.label.color='white',
                     vertex.color=V(sub)$color,
                     vertex.label.font=7,
-                    edge.arrow.size=map(E(sub)$weight,c(.01,.05)),
+                    edge.arrow.size=E(sub)$edgearrowsize,
                     edge.width=E(sub)$edgewidth,
                     edge.label=E(sub)$weight,
                     edge.label.cex=E(sub)$edgelabelcex,
@@ -333,8 +352,17 @@ multicontracted <- function(graphlist,
              main=paste("Territory of ",territoryi,
                         "\nPeriod: ",pdnamei,sep=""))
       }
-    if (savepng) {dev.off()}
-    }
- 
+
+    } #end for loop i of subframes in multiframe plot
+  
+  if (savepng) {dev.off()}
+  
   return(list(graphs=gout,namedf=namedf) )
 } #end function
+
+
+## testing
+# mc1 <- multicontracted(graphlist = graphlist,attrib = "sector",pdbreak = c(1911,1989,2000,2012),vertex.size.attrib = 'degree',vertex.color.attrib = 'degdiff',color.attrib = 'degdiff',vertex.label.minmax = c(2,3.5),vertex.size.minmax = c(25,35),edge.width.minmax = c(3,5),edge.label.minmax = c(.001,.001),savepng = T, savename = 'multContTestsector1')
+# 
+# mc2 <- multicontracted(graphlist = graphlist,attrib = "ipc_field",pdbreak = c(1911,1989,2000,2012),vertex.size.attrib = 'degree',vertex.color.attrib = 'degdiff',color.attrib = 'degdiff',vertex.label.minmax = c(1,2.5),vertex.size.minmax = c(13,23),edge.width.minmax = c(2,5),edge.label.minmax = c(.001,.001),savepng = T,savename = 'multiContTestall1',png.res = 300)
+dput(x = graphlist,file = 'biofuelpatentnetworks.rda')

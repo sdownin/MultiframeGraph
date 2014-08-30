@@ -7,4 +7,12 @@ Author: Stephen Downing
 Maintainer: Stephen Downing <sdowning.bm02g@nctu.edu.tw>
 Description: Wrapper functions and related helper functions to produce
     multiframe plots of multiple igraph objects faceted by a given attribute.
-License: GPL (v3 or later)
+License: GPL-3
+LazyData: TRUE
+Depends:
+    R (>= 3.0.2)
+	igraph (>= 0.7.1)
+Suggests:
+    knitr
+VignetteBuilder: knitr
+Roxygen: list(wrap = TRUE)
