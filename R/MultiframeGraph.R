@@ -73,6 +73,9 @@ map <- function(x,   #vector of degrees
 #' @param graphlist  a list of igraph objects (i.e., graphs)
 #' @param attrib  character name of igraph vector attribute for coloring, sizing
 #' @param pdbreak a vector of the numeric values to divide periods
+#' @param label.attrib character name of attribute for vertex label
+#' default 'id' is the number of the vertex in alphabetical list of all 
+#' verties in list of igraph objects used in multiframe plot
 #' @param vertex.size.attrib  character {'degree','indeg','outdeg','degdiff'}
 #' @param veretex.color.attrib  character {'degree','indeg','outdeg','degdiff',
 #' <other attribute>}
@@ -101,11 +104,14 @@ map <- function(x,   #vector of degrees
 #' Vertex coloring is automatically generated from rainbow pallette. 
 #' @author Stephen Downing
 #' @import igraph
+#' @seealso
+#' \code{\link[igraph:igraph-package]{igraph}}
 #' @export
 
 multicontracted <- function(graphlist,
                             attrib,
                             pdbreak,
+                            label.attrib='id',
                             vertex.size.attrib='degree', 
                             #{'degree','indeg','outdeg','degdiff'}
                             vertex.color.attrib='degdiff', 
@@ -204,9 +210,13 @@ multicontracted <- function(graphlist,
                                                      outdeg='sum',
                                                      degdiff='mean') )
       V(con)$name <- gpdname
-
-      for (d in seq_len(length(gpdname))) {
-        V(con)[V(con)$name==gpdname[d]]$id <- d
+      
+      if (label.attrib == 'id') {
+        for (d in seq_len(length(gpdname))) {
+          V(con)[V(con)$name==gpdname[d]]$id <- d
+        }
+      } else {
+        V(con)$id <- get.vertex.attribute(graph = con, name = attrib)
       }
       
       #remove unused vertex attributes
