@@ -369,8 +369,8 @@ multiContractedStar <- function(graphlist,
 
 
 
-## testing
-mc2 <- multiContractedStar(graphlist = graphlist,attrib = "ipc_field",pdbreak = c(1911,1989,2000,2012),vertex.size.attrib = 'degree',vertex.color.attrib = 'degdiff',color.attrib = 'degdiff',vertex.label.minmax = c(1,2.5),vertex.size.minmax = c(13,23),edge.width.minmax = c(1,5),edge.label.minmax = c(.001,.001),savepng = T,savename = 'multiContractedStar1',png.res = 500)
+### testing
+#mc2 <- multiContractedStar(graphlist = graphlist,attrib = "ipc_field",pdbreak = c(1911,1989,2000,2012),vertex.size.attrib = 'degree',vertex.color.attrib = 'degdiff',color.attrib = 'degdiff',vertex.label.minmax = c(1,2.5),vertex.size.minmax = c(13,23),edge.width.minmax = c(1,5),edge.label.minmax = c(.001,.001),savepng = T,savename = 'multiContractedStar1',png.res = 500)
 
 
 
@@ -688,6 +688,6 @@ multiContractedCircle <- function(graphlist,
 
 
 
-## testing
-mc1 <- multiContractedCircle(graphlist = graphlist,attrib = "sector",pdbreak = c(1911,1989,2000,2012),vertex.size.attrib = 'degree',vertex.color.attrib = 'degdiff',color.attrib = 'degdiff',vertex.label.minmax = c(.5,2.5),vertex.size.minmax = c(25,35),edge.width.minmax = c(3,5),edge.label.minmax = c(.001,.001),savepng = T, savename = 'multiContractedCircle1')
+### testing
+# mc1 <- multiContractedCircle(graphlist = graphlist,attrib = "sector",pdbreak = c(1911,1989,2000,2012),vertex.size.attrib = 'degree',vertex.color.attrib = 'degdiff',color.attrib = 'degdiff',vertex.label.minmax = c(.5,2.5),vertex.size.minmax = c(25,35),edge.width.minmax = c(3,5),edge.label.minmax = c(.001,.001),savepng = T, savename = 'multiContractedCircle1')
 # 
